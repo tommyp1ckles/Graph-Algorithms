@@ -1,6 +1,6 @@
 /*
  * File:        bip.c
- * Author:      Tom Hadlaw 100101188
+ * Author:      Tom Hadlaw
  * Date:        07/03/2015
  * Version:     1.0
  * Purpose:     Reads graph from stdin and checks if graph is bipartite,

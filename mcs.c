@@ -1,6 +1,6 @@
 /*
  * File:        mcs.c
- * Author:      Tom Hadlaw 100101188
+ * Author:      Tom Hadlaw
  * Date:        15/02/2015
  * Version:     1.0
  * Purpose:     Performs a maximum cardinality search on a graph and gives
