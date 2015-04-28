@@ -9,20 +9,20 @@ class Vertex:
 class DiGraph():
     V = None
     n = 0
-    adj = list()
-    incEdges = list() #Maintaining list of incoming edges should speed
+    adj = []
+    inc = [] #Maintaining list of incoming edges should speed
     #up certain algorithms.
     weights = dict() # Contains both the weights and the flows.
     def __init__(self, N):
         self.V = list()
-        self.adj = [[]] * N
-        self.incEdges = [[]] * N
         for i in xrange(0, N):
+            self.adj.append([])
+            self.inc.append([])
             self.V.append(Vertex())
             self.V[i].vertexNum = i
     def addEdge(self, i, j, weight):
         self.adj[i].append(self.V[j])
-        self.incEdges[j].append(self.V[i])
+        self.inc[j].append(self.V[i])
         self.weights[str(i) + "," + str(j)] = [0, weight]
     def setFlow(self, i, j, flow):
         self.weights[str(i) + "," + str(j)][0] = flow
@@ -41,6 +41,20 @@ class DiGraph():
     def __repr__(self):
         return "<DiGraph %d>" % self.n
 
+def edgeWeight(G, i, j):
+    key = "%d,%d" % (i, j)
+    if key in G.weights:
+        return G.weights[key][1]
+    else:
+        return None
+
+def edgeFlow(G, i, j):
+    key = "%d,%d" % (i, j)
+    if key in G.weights:
+        return G.weights[key][0]
+    else:
+        return None
+
 def maxFlow(G, s, t):
     if not isinstance(G, DiGraph):
         raise TypeError( \
@@ -52,8 +66,9 @@ def maxFlow(G, s, t):
     v = (R - S).pop()
     print v
 
-G = DiGraph(3)
+G = DiGraph(4)
 G.addEdge(0,1,111)
-G.addEdge(1,2,222)
-G.addEdge(2,0,333)
-G.printGraph()
+print G.inc
+print G.adj
+print edgeWeight(G, 0, 1)
+#G.printGraph()
