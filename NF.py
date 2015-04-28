@@ -23,5 +23,11 @@ class DiGraph():
     def getFlow(self, i, j):
         return self.weights[str(i) + "," + str(j)][0]
 
+def maxFlow(G, s, t):
+    R = set([G.V[s]])
+    S = set()
+    print R
+    print S
 
 G = DiGraph(4)
+maxFlow(G, 0, 1)
