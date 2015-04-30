@@ -60,15 +60,18 @@ def maxFlow(G, s, t):
         raise TypeError( \
             "maxFlow requires a DiGraph " + \
             "(directed graph).")
+    reaching = {}
     R = set([G.V[s]])
     S = set()
     #while True:
     v = (R - S).pop()
-    print v
+    for w in G.adj[v.vertexNum]:
+        if edgeFlow(G, v.vertexNum, w.vertexNum) < \
+                edgeWeight(G, v.vertexNum, w.vertexNum):
+            R.add(w)
+    for w in G.inc[v.vertexNum]:
+        if edgeFlow(G, w.vertexNum, v.vertexNum) > 0:
+            R.add(w)
 
-G = DiGraph(4)
-G.addEdge(0,1,111)
-print G.inc
-print G.adj
-print edgeWeight(G, 0, 1)
-#G.printGraph()
+
+G = DiGraph(8)
