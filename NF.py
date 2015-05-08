@@ -1,3 +1,5 @@
+from numpy import *
+
 class Vertex:
     seen = False
     vertexNum = None
@@ -14,6 +16,7 @@ class DiGraph():
     #up certain algorithms.
     weights = dict() # Contains both the weights and the flows.
     def __init__(self, N):
+        self.n = N
         self.V = list()
         for i in xrange(0, N):
             self.adj.append([])
@@ -60,8 +63,9 @@ def edgeFlow(G, i, j):
     #        "maxFlow requires a DiGraph " + \
     #        "(directed graph).")
 
-def flowAP(G, s, t):
-    reaching = {} #storing vertex objects not indices.
+def iterateReachable(G, s, t):
+    reaching = zeros(G.n)
+    reaching.fill(-1)
     R = set([G.V[s]])
     S = set()
     t_reached = False
@@ -69,26 +73,37 @@ def flowAP(G, s, t):
     for w in G.adj[v.vertexNum]:
         if edgeFlow(G, v.vertexNum, w.vertexNum) < \
                 edgeWeight(G, v.vertexNum, w.vertexNum):
-            reaching[str(w.vertexNum)] = v
+            reaching[w.vertexNum] = v.vertexNum
             R.add(w)
             if w.vertexNum is t:
                 t_reached = True
     for w in G.inc[v.vertexNum]:
         if edgeFlow(G, w.vertexNum, v.vertexNum) > 0:
-            reaching[str(w.vertexNum)] = v
+            reaching[w.vertexNum] = v.vertexNum
             R.add(w)
             if w.vertexNum is t:
                 t_reached = True
+    print "*" * 30
+    print t_reached
     print reaching
     print str("R = ") + str(R)
     print str("S = ") + str(S)
+    #traceAPFlowPath(G, s, t, reaching)
+    print "*" * 30
     return (t_reached, reaching, R, S)
 
 def traceAPFlowPath(G, s, t, reaching, order = []):
+    curr = t
+    order = []
+    print "*" * 10
+    while curr is not s:
+        print curr
+        order.append(curr)
+        curr = reaching[curr]
     print order
 
 G = DiGraph(4)
 G.addEdge(0,1,1)
 G.addEdge(1,2,2)
 G.addEdge(2,3,1)
-flowAP(G, 0, 3)
+iterateReachable(G, 0, 3)
