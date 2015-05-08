@@ -55,23 +55,40 @@ def edgeFlow(G, i, j):
     else:
         return None
 
-def maxFlow(G, s, t):
-    if not isinstance(G, DiGraph):
-        raise TypeError( \
-            "maxFlow requires a DiGraph " + \
-            "(directed graph).")
-    reaching = {}
+    #if not isinstance(G, DiGraph):
+    #    raise TypeError( \
+    #        "maxFlow requires a DiGraph " + \
+    #        "(directed graph).")
+
+def flowAP(G, s, t):
+    reaching = {} #storing vertex objects not indices.
     R = set([G.V[s]])
     S = set()
-    #while True:
+    t_reached = False
     v = (R - S).pop()
     for w in G.adj[v.vertexNum]:
         if edgeFlow(G, v.vertexNum, w.vertexNum) < \
                 edgeWeight(G, v.vertexNum, w.vertexNum):
+            reaching[str(w.vertexNum)] = v
             R.add(w)
+            if w.vertexNum is t:
+                t_reached = True
     for w in G.inc[v.vertexNum]:
         if edgeFlow(G, w.vertexNum, v.vertexNum) > 0:
+            reaching[str(w.vertexNum)] = v
             R.add(w)
+            if w.vertexNum is t:
+                t_reached = True
+    print reaching
+    print str("R = ") + str(R)
+    print str("S = ") + str(S)
+    return (t_reached, reaching, R, S)
 
+def traceAPFlowPath(G, s, t, reaching, order = []):
+    print order
 
-G = DiGraph(8)
+G = DiGraph(4)
+G.addEdge(0,1,1)
+G.addEdge(1,2,2)
+G.addEdge(2,3,1)
+flowAP(G, 0, 3)
