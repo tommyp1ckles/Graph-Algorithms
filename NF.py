@@ -30,6 +30,7 @@ class DiGraph():
     def setFlow(self, i, j, flow):
         self.weights[str(i) + "," + str(j)][0] = flow
     def getWeight(self, i, j):
+        print self.weights
         return self.weights[str(i) + "," + str(j)][1]
     def getFlow(self, i, j):
         return self.weights[str(i) + "," + str(j)][0]
@@ -63,47 +64,55 @@ def edgeFlow(G, i, j):
     #        "maxFlow requires a DiGraph " + \
     #        "(directed graph).")
 
-def iterateReachable(G, s, t):
-    reaching = zeros(G.n)
+def flowAP(G, s, t):
+    reaching = zeros(G.n, dtype=int64)
     reaching.fill(-1)
     R = set([G.V[s]])
     S = set()
     t_reached = False
     v = (R - S).pop()
-    for w in G.adj[v.vertexNum]:
-        if edgeFlow(G, v.vertexNum, w.vertexNum) < \
-                edgeWeight(G, v.vertexNum, w.vertexNum):
-            reaching[w.vertexNum] = v.vertexNum
-            R.add(w)
-            if w.vertexNum is t:
-                t_reached = True
-    for w in G.inc[v.vertexNum]:
-        if edgeFlow(G, w.vertexNum, v.vertexNum) > 0:
-            reaching[w.vertexNum] = v.vertexNum
-            R.add(w)
-            if w.vertexNum is t:
-                t_reached = True
-    print "*" * 30
-    print t_reached
-    print reaching
-    print str("R = ") + str(R)
-    print str("S = ") + str(S)
-    #traceAPFlowPath(G, s, t, reaching)
-    print "*" * 30
+    while not t_reached:
+        print v
+        for w in G.adj[v.vertexNum]:
+            if edgeFlow(G, v.vertexNum, w.vertexNum) < \
+                    edgeWeight(G, v.vertexNum, w.vertexNum):
+                reaching[w.vertexNum] = v.vertexNum
+                R.add(w)
+                if w.vertexNum is t:
+                    t_reached = True
+        for w in G.inc[v.vertexNum]:
+            if edgeFlow(G, w.vertexNum, v.vertexNum) > 0:
+                reaching[w.vertexNum] = v.vertexNum
+                R.add(w)
+                if w.vertexNum is t:
+                    t_reached = True
+        print "*" * 30
+        print t_reached
+        print reaching
+        print str("R = ") + str(R)
+        print str("S = ") + str(S)
+        print "*" * 30
+        S.add(v)
+        if R is S:
+            return None
+        v = (R - S).pop()
+    print "->" + str(traceAPFlowPath(G, s, t, reaching))
     return (t_reached, reaching, R, S)
 
 def traceAPFlowPath(G, s, t, reaching, order = []):
     curr = t
-    order = []
-    print "*" * 10
-    while curr is not s:
-        print curr
-        order.append(curr)
+    order = [curr]
+    min_cap = G.getWeight(curr, reaching[curr]) - G.getFlow(curr, reaching[curr])
+    while curr != s:
+        edge_excess = G.getWeight(curr, reaching[curr]) - G.getFlow(curr, reaching[curr])
+        if edge_excess < min_cap:
+            min_cap = edge_excess
         curr = reaching[curr]
-    print order
+        order.append(curr)
+    return (order, min_cap)
 
 G = DiGraph(4)
 G.addEdge(0,1,1)
 G.addEdge(1,2,2)
 G.addEdge(2,3,1)
-iterateReachable(G, 0, 3)
+flowAP(G, 0, 3)
