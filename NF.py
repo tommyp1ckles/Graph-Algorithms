@@ -59,12 +59,31 @@ def edgeFlow(G, i, j):
     else:
         return None
 
+def netFlow(G, i, j):
+    f = edgeFlow(G, i, j)
+    if f is not None:
+        return f
+    else:
+        return edgeFlow(G, j, i)
+
+def netWeight(G, i, j):
+    f = edgeWeight(G, i, j)
+    if f is not None:
+        return f
+    else:
+        return edgeWeight(G, j, i)
+
     #if not isinstance(G, DiGraph):
     #    raise TypeError( \
     #        "maxFlow requires a DiGraph " + \
     #        "(directed graph).")
 
 def flowAP(G, s, t):
+    print "^^^^"
+    print G
+    print s
+    print t
+    print "*****"
     reaching = zeros(G.n, dtype=int64)
     reaching.fill(-1)
     R = set([G.V[s]])
@@ -86,33 +105,58 @@ def flowAP(G, s, t):
                 R.add(w)
                 if w.vertexNum is t:
                     t_reached = True
-        print "*" * 30
-        print t_reached
-        print reaching
-        print str("R = ") + str(R)
-        print str("S = ") + str(S)
-        print "*" * 30
         S.add(v)
-        if R is S:
+        if R == S:
             return None
+        print R
+        print S
         v = (R - S).pop()
-    print "->" + str(traceAPFlowPath(G, s, t, reaching))
-    return (t_reached, reaching, R, S)
-
-def traceAPFlowPath(G, s, t, reaching, order = []):
+    #return (t_reached, reaching, R, S)
+    return reaching
+def traceAPFlowPath(G, s, t, reaching):
     curr = t
     order = [curr]
-    min_cap = G.getWeight(curr, reaching[curr]) - G.getFlow(curr, reaching[curr])
+    #min_cap = edgeWeight(G, curr, reaching[curr]) - G.getFlow(curr, reaching[curr])
+    min_cap = netWeight(G, curr, reaching[curr]) - netFlow(G, curr, reaching[curr])
     while curr != s:
-        edge_excess = G.getWeight(curr, reaching[curr]) - G.getFlow(curr, reaching[curr])
+        edge_excess = netWeight(G, curr, reaching[curr]) - netFlow(G, curr, reaching[curr])
         if edge_excess < min_cap:
             min_cap = edge_excess
         curr = reaching[curr]
         order.append(curr)
     return (order, min_cap)
 
+def maxFlow(G, s, t):
+    AP_reaching = flowAP(G, s, t)
+    if AP_reaching is None:
+        return
+    while AP_reaching is not None:
+        path_order_tuple = traceAPFlowPath(G, s, t, AP_reaching)
+        order = path_order_tuple[0]
+        min_cap = path_order_tuple[1]
+        #OOOPs you gotta subtract flow on back edges...
+        for k in xrange(0, len(order) - 1):
+            i = order[k]
+            j = order[k+1]
+            if ("%d,%d" % (i,j)) in G.weights:
+                G.weights["%d,%d" % (i,j)][0] = \
+                        G.weights["%d,%d" % (i,j)][0] + min_cap
+                print "adding %d flow." % min_cap
+            else:
+                G.weights["%d,%d" % (j,i)][0] = \
+                        G.weights["%d,%d" % (j,i)][0] + min_cap
+                print "adding %d flow." % min_cap
+        AP_reaching = flowAP(G, s, t)
+    return
+
 G = DiGraph(4)
+G.addEdge(0,3,1)
 G.addEdge(0,1,1)
-G.addEdge(1,2,2)
+G.addEdge(1,2,1)
 G.addEdge(2,3,1)
-flowAP(G, 0, 3)
+maxFlow(G, 0, 3)
+#G.addEdge(0,1,1)
+#G.addEdge(0,1,1)
+#G.addEdge(1,2,2)
+#G.addEdge(2,3,1)
+#flowAP(G, 0, 3)
