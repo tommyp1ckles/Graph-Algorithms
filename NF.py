@@ -113,18 +113,26 @@ def flowAP(G, s, t):
         v = (R - S).pop()
     #return (t_reached, reaching, R, S)
     return reaching
+
 def traceAPFlowPath(G, s, t, reaching):
     curr = t
     order = [curr]
-    #min_cap = edgeWeight(G, curr, reaching[curr]) - G.getFlow(curr, reaching[curr])
     min_cap = netWeight(G, curr, reaching[curr]) - netFlow(G, curr, reaching[curr])
+    if ("%d,%d" % (curr,reaching[curr])) in G.weights:
+        forward = [False]
+    else:
+        forward = [True]
     while curr != s:
         edge_excess = netWeight(G, curr, reaching[curr]) - netFlow(G, curr, reaching[curr])
         if edge_excess < min_cap:
             min_cap = edge_excess
+        if ("%d,%d" % (curr,reaching[curr])) in G.weights:
+            forward.append(False)
+        else:
+            forward.append(True)
         curr = reaching[curr]
         order.append(curr)
-    return (order, min_cap)
+    return (order, min_cap, forward)
 
 def maxFlow(G, s, t):
     AP_reaching = flowAP(G, s, t)
@@ -138,11 +146,16 @@ def maxFlow(G, s, t):
         for k in xrange(0, len(order) - 1):
             i = order[k]
             j = order[k+1]
+            is_forward = path_order_tuple[2][k]
             if ("%d,%d" % (i,j)) in G.weights:
+                if not is_foward:
+                    min_cap = min_cap * -1
                 G.weights["%d,%d" % (i,j)][0] = \
                         G.weights["%d,%d" % (i,j)][0] + min_cap
                 print "adding %d flow." % min_cap
             else:
+                if not is_forward:
+                    min_cap = min_cap * -1
                 G.weights["%d,%d" % (j,i)][0] = \
                         G.weights["%d,%d" % (j,i)][0] + min_cap
                 print "adding %d flow." % min_cap
@@ -155,6 +168,8 @@ G.addEdge(0,1,1)
 G.addEdge(1,2,1)
 G.addEdge(2,3,1)
 maxFlow(G, 0, 3)
+print "********" + str(G.weights["0,3"][0])
+print "********" + str(G.weights["2,3"][0])
 #G.addEdge(0,1,1)
 #G.addEdge(0,1,1)
 #G.addEdge(1,2,2)
