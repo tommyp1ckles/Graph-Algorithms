@@ -1,6 +1,10 @@
 from numpy import *
 
 class Vertex:
+    """Represents a single vertex of a graph
+    Attributes:
+        vertexNum: Number of the vertex, as is stored in graph vertex list.
+    """
     seen = False
     vertexNum = None
     def __str__(self):
@@ -9,8 +13,16 @@ class Vertex:
         return "<Vertex %d>" % self.vertexNum
 
 class DiGraph():
+    """Represents a weighted directed graph with optional edge flows
+    Attributes:
+        V: List of vertex objects in graph.
+        n: Size of the vertex set of the graph.
+        adj: Adjacency List of the graph.
+        inc: Lists incoming directed edges for each of the vertices.
+        weights: Lookup for flow and weight (capacity) of edge.
+    """
     V = None
-    n = 0
+    n = None
     adj = []
     inc = [] #Maintaining list of incoming edges should speed
     #up certain algorithms.
@@ -30,7 +42,6 @@ class DiGraph():
     def setFlow(self, i, j, flow):
         self.weights[str(i) + "," + str(j)][0] = flow
     def getWeight(self, i, j):
-        print self.weights
         return self.weights[str(i) + "," + str(j)][1]
     def getFlow(self, i, j):
         return self.weights[str(i) + "," + str(j)][0]
@@ -40,6 +51,12 @@ class DiGraph():
             for adjvert in self.adj[v.vertexNum]:
                 print " %s" % str(adjvert),
             print
+    def getIncomingFlow(self, v):
+        inc = self.inc[v]
+        flow_sum = 0
+        for u in inc:
+            flow_sum = flow_sum + self.weights["%d,%d" % (u.vertexNum, v)][0]
+        return flow_sum
     def __str__(self):
         return "<DiGraph %d>" % self.n
     def __repr__(self):
@@ -73,17 +90,7 @@ def netWeight(G, i, j):
     else:
         return edgeWeight(G, j, i)
 
-    #if not isinstance(G, DiGraph):
-    #    raise TypeError( \
-    #        "maxFlow requires a DiGraph " + \
-    #        "(directed graph).")
-
 def flowAP(G, s, t):
-    print "^^^^"
-    print G
-    print s
-    print t
-    print "*****"
     reaching = zeros(G.n, dtype=int64)
     reaching.fill(-1)
     R = set([G.V[s]])
@@ -91,7 +98,6 @@ def flowAP(G, s, t):
     t_reached = False
     v = (R - S).pop()
     while not t_reached:
-        print v
         for w in G.adj[v.vertexNum]:
             if edgeFlow(G, v.vertexNum, w.vertexNum) < \
                     edgeWeight(G, v.vertexNum, w.vertexNum):
@@ -108,10 +114,7 @@ def flowAP(G, s, t):
         S.add(v)
         if R == S:
             return None
-        print R
-        print S
         v = (R - S).pop()
-    #return (t_reached, reaching, R, S)
     return reaching
 
 def traceAPFlowPath(G, s, t, reaching):
@@ -135,6 +138,10 @@ def traceAPFlowPath(G, s, t, reaching):
     return (order, min_cap, forward)
 
 def maxFlow(G, s, t):
+    if not isinstance(G, DiGraph):
+        raise TypeError( \
+            "maxFlow requires a DiGraph " + \
+            "(directed graph).")
     AP_reaching = flowAP(G, s, t)
     if AP_reaching is None:
         return
@@ -142,7 +149,6 @@ def maxFlow(G, s, t):
         path_order_tuple = traceAPFlowPath(G, s, t, AP_reaching)
         order = path_order_tuple[0]
         min_cap = path_order_tuple[1]
-        #OOOPs you gotta subtract flow on back edges...
         for k in xrange(0, len(order) - 1):
             i = order[k]
             j = order[k+1]
@@ -152,24 +158,25 @@ def maxFlow(G, s, t):
                     min_cap = min_cap * -1
                 G.weights["%d,%d" % (i,j)][0] = \
                         G.weights["%d,%d" % (i,j)][0] + min_cap
-                print "adding %d flow." % min_cap
             else:
                 if not is_forward:
                     min_cap = min_cap * -1
                 G.weights["%d,%d" % (j,i)][0] = \
                         G.weights["%d,%d" % (j,i)][0] + min_cap
-                print "adding %d flow." % min_cap
         AP_reaching = flowAP(G, s, t)
-    return
+    return G.getIncomingFlow(t)
 
-G = DiGraph(4)
-G.addEdge(0,3,1)
+G = DiGraph(5)
+G.addEdge(0,3,1000000)
+G.addEdge(0,4,1000000)
+G.addEdge(4,3,666)
 G.addEdge(0,1,1)
 G.addEdge(1,2,1)
 G.addEdge(2,3,1)
-maxFlow(G, 0, 3)
+print maxFlow(G, 0, 3)
 print "********" + str(G.weights["0,3"][0])
 print "********" + str(G.weights["2,3"][0])
+print "********" + str(G.weights["0,4"][0])
 #G.addEdge(0,1,1)
 #G.addEdge(0,1,1)
 #G.addEdge(1,2,2)
