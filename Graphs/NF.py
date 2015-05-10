@@ -1,5 +1,6 @@
 from numpy import *
 import Graphs
+
 def edgeWeight(G, i, j):
     key = "%d,%d" % (i, j)
     if key in G.weights:
@@ -76,7 +77,7 @@ def traceAPFlowPath(G, s, t, reaching):
     return (order, min_cap, forward)
 
 def maxFlow(G, s, t):
-    if not isinstance(G, DiGraph):
+    if not isinstance(G, Graphs.DiGraph):
         raise TypeError( \
             "maxFlow requires a DiGraph " + \
             "(directed graph).")

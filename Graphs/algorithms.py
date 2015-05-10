@@ -1,5 +1,6 @@
 from numpy import *
 import Graphs
+
 def edgeWeight(G, i, j):
     key = "%d,%d" % (i, j)
     if key in G.weights:
@@ -76,7 +77,7 @@ def traceAPFlowPath(G, s, t, reaching):
     return (order, min_cap, forward)
 
 def maxFlow(G, s, t):
-    if not isinstance(G, DiGraph):
+    if not isinstance(G, Graphs.DiGraph):
         raise TypeError( \
             "maxFlow requires a DiGraph " + \
             "(directed graph).")
@@ -104,19 +105,11 @@ def maxFlow(G, s, t):
         AP_reaching = flowAP(G, s, t)
     return G.getIncomingFlow(t)
 
-G = Graphs.DiGraph(5)
-G.addEdge(0,3,1000000)
-G.addEdge(0,4,1000000)
-G.addEdge(4,3,666)
-G.addEdge(0,1,1)
+G = Graphs.DiGraph(4)
+G.addEdge(0,1,1000000000)
+G.addEdge(0,2,1000000000)
 G.addEdge(1,2,1)
-G.addEdge(2,3,1)
+G.addEdge(1,3,1000000000)
+G.addEdge(2,3,1000000000)
 print maxFlow(G, 0, 3)
-print "********" + str(G.weights["0,3"][0])
-print "********" + str(G.weights["2,3"][0])
-print "********" + str(G.weights["0,4"][0])
-#G.addEdge(0,1,1)
-#G.addEdge(0,1,1)
-#G.addEdge(1,2,2)
-#G.addEdge(2,3,1)
-#flowAP(G, 0, 3)
+print "********" + str(G.weights["0,1"][0])
