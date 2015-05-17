@@ -7,6 +7,8 @@ class Vertex:
     """
     seen = False
     vertexNum = None
+    even = None
+    isMatched = False
     def __str__(self):
         return "<Vertex %d>" % self.vertexNum
     def __repr__(self):
@@ -62,3 +64,54 @@ class DiGraph():
     def __repr__(self):
         return "<DiGraph %d>" % self.n
 
+class Graph():
+    """Represents a general unweighted Graph"""
+    V = [] #start with empty vertex set
+    n = 0
+    Adj = [] #Adjacency list
+    Adjl = [] #Adjacency list by label
+    def __init__(self, N):
+        """Constructor method
+        Args:
+            param1 (N): Size of the graph.
+        """
+        for i in range(0, N):
+            self.Adj.append([])
+            #self.Weight.append([])
+            self.V.append(Vertex())
+            self.V[i].vertexNum = i
+            self.n = N
+    def addEdge(self, i, j):
+        """Adds edge from vertex i to vertex j to graph
+        Args:
+          param1 (i): pairwise adjacent vertex i.
+          param2 (j): pairwise adjacent vertex j.
+
+        """
+        self.Adj[i].append(self.V[j])
+        self.Adj[j].append(self.V[i])
+    def printAdjList(self):
+        """Prints adjacency list for graph"""
+        for i in range(0, self.n):
+            print "V_" + str(i) + " ---> {" + str(self.Adj[i]) + "}"
+
+def importGraphFile(filename):
+    """Reads in graph data from file and returns a graph object.
+        Args:
+        param1 (filename): String of filename to read graph data from.
+        Returns:    Graph containing the read in edges.
+        Assumptions:First line in file is an integer representing the n = size
+        of the graph, all lines after that contain edges in the
+        form i,j.
+        Notes:      Ignores edge weights parameters.
+        """
+    f = open(filename, "r")
+    n = int(f.readline())
+    G = Graph(n)
+    sys.setrecursionlimit(n + 1)
+    count = 0
+    for line in f:
+        count += 1
+        arr = line.split(",")
+        G.addEdge(int(arr[0]) - 1, int(arr[1]) - 1)
+    return G
