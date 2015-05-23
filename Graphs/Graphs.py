@@ -9,6 +9,7 @@ class Vertex:
     vertexNum = None
     even = None
     isMatched = False
+    data = None
     def __str__(self):
         return "<Vertex %d>" % self.vertexNum
     def __repr__(self):
