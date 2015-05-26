@@ -267,18 +267,24 @@ def resetVertices(G):
     for v in G.V:
         v.seen = False
 
+INFINITY = "INFINITY"
 class vertexDistance:
     vertexNum = None
     distance = None
     def __init__(self, distance, source, vertex):
         self.vertexNum = vertex
         self.distance = distance
-    def __lt__(self, dist):
-        return (dist < dist.distance)
-    def __gt__(self, dist)
-        return (dist > self.distance)
+    def __cmp__(self, other):
+        if self.distance is other.distance:
+            return 0
+        if other.distance is INFINITY:
+            return False
+        if self.distance is INFINITY:
+            return True
+        return (self.distance > other.distance)
+    def __str__(self):
+        return "<Distance object: %s>" % str(self.distance)
 
-INFINITY = -1
 def Dijkstras(G, s):
     dist = array([] * G.n)
     prev = array([] * G.n)
@@ -289,20 +295,34 @@ def Dijkstras(G, s):
     for v in G.V:
         if v.vertexNum is not s:
             #dist[v.vertexNum] = INFINITY
-            dist[
+            dist.put(vertexDistance(INFINITY, s, v.vertexNum))
             prev[v.verteXnum] = None
         Q.append(v.vertexNum)
-    #while len(Q) is not 0:
-
-
+    while len(Q) is not 0:
+        u = dist.get()
+        for v in G.adj[u]:
+            #alt = dist[u]
 d = Queue.PriorityQueue(maxsize=100)
-d.add
 G = Graphs.Graph(4)
 G.addEdge(0,1)
 G.addEdge(1,2)
 G.addEdge(2,3)
 G.addEdge(3,0)
 
+
+q = Queue.PriorityQueue(maxsize=100)
+d1 = vertexDistance(10, 0, 1)
+d2 = vertexDistance(20, 0, 1)
+d3 = vertexDistance(30, 0, 1)
+d4 = vertexDistance(INFINITY, 0, 1)
+q.put(d3)
+q.put(d1)
+q.put(d2)
+q.put(d4)
+print q.get()
+print q.get()
+print q.get()
+print q.get()
 #G = importGraphStdin()
 #MM(G)
 
