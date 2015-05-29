@@ -1,10 +1,13 @@
 import sys
 from numpy import *
-import Graphs
 import Queue
 ############################################################
 import cProfile
 ############################################################
+#import Graphs
+#import GraphTool
+from Graphs import *
+from GraphTools import *
 
 def edgeWeight(G, i, j):
     key = "%d,%d" % (i, j)
@@ -255,12 +258,7 @@ def MM(G):
         vi = getUnsaturated(G, edgeSet(M))
     maxM = map(lambda n: n + 1, M)
     sortedEdges = sortMatching(maxM)
-    for edge in sortedEdges:
-        if edge[1] != G.n+2:
-            print "v%d is matched to v%d." % (edge[0], edge[1])
-        else:
-            print "v%d is matched to nothing" % edge[0]
-    print "number of vertices matched = " + str(len(maxM))
+    return sortedEdges
 
 def resetVertices(G):
     """Resets 'seen' attribute in all the vertices of a graph"""
@@ -285,6 +283,7 @@ class vertexDistance:
     def __str__(self):
         return "<Distance object: %s>" % str(self.distance)
 
+#TODO: Finish this.
 def Dijkstras(G, s):
     dist = array([] * G.n)
     prev = array([] * G.n)
@@ -300,37 +299,8 @@ def Dijkstras(G, s):
         Q.append(v.vertexNum)
     while len(Q) is not 0:
         u = dist.get()
-        for v in G.adj[u]:
-            #alt = dist[u]
-d = Queue.PriorityQueue(maxsize=100)
-G = Graphs.Graph(4)
-G.addEdge(0,1)
-G.addEdge(1,2)
-G.addEdge(2,3)
-G.addEdge(3,0)
+        #for v in G.adj[u]:
+        #    #alt = dist[u]
 
-
-q = Queue.PriorityQueue(maxsize=100)
-d1 = vertexDistance(10, 0, 1)
-d2 = vertexDistance(20, 0, 1)
-d3 = vertexDistance(30, 0, 1)
-d4 = vertexDistance(INFINITY, 0, 1)
-q.put(d3)
-q.put(d1)
-q.put(d2)
-q.put(d4)
-print q.get()
-print q.get()
-print q.get()
-print q.get()
-#G = importGraphStdin()
-#MM(G)
-
-#G = Graphs.DiGraph(4)
-#G.addEdge(0,1,1000000000)
-#G.addEdge(0,2,1000000000)
-#G.addEdge(1,2,1)
-#G.addEdge(1,3,1000000000)
-#G.addEdge(2,3,1000000000)
-#print maxFlow(G, 0, 3)
-#print "********" + str(G.weights["0,1"][0])
+G = importGraphStdin()
+MM(G)
