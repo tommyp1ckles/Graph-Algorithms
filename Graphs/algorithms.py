@@ -8,6 +8,7 @@ import cProfile
 #import GraphTool
 from Graphs import *
 from GraphTools import *
+from QueueWrapper import *
 
 def edgeWeight(G, i, j):
     key = "%d,%d" % (i, j)
@@ -288,9 +289,9 @@ def Dijkstras(G, s):
     dist = array([] * G.n)
     prev = array([] * G.n)
     #dist[s] = 0
-    dist = Queue.PriorityQueue(maxsize=G.n)
+    #dist = Queue.PriorityQueue(maxsize=G.n)
+    dist = pqueue(G.n)
     prev[s] = None # Undefined.
-    Q = []
     for v in G.V:
         if v.vertexNum is not s:
             #dist[v.vertexNum] = INFINITY
@@ -302,5 +303,26 @@ def Dijkstras(G, s):
         #for v in G.adj[u]:
         #    #alt = dist[u]
 
-G = importGraphStdin()
-MM(G)
+d1 = vertexDistance(10, 0, 1)
+d2 = vertexDistance(20, 0, 1)
+d3 = vertexDistance(30, 0, 1)
+
+q = pqueue(100)
+q.push(d1)
+q.push(d2)
+
+print q.pop()
+print q.pop()
+print q.pop()
+print q.pop()
+#q.put(d1)
+#q.put(d3)
+#q.put(d2)
+#print q.get()
+#print q.get()
+#print q.get()
+
+#q = pqueue(100)
+
+#G = importGraphStdin()
+#MM(G)
